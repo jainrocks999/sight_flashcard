@@ -1,4 +1,4 @@
-package com.sightcards
+package com.newsightcards
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
