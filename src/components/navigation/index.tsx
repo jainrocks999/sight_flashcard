@@ -3,16 +3,12 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import {useDispatch} from 'react-redux';
 import Home from '../../screens/home';
+import Splash from '../../screens/splash';
+import PrePrimary from '../../screens/preprimary';
 export type StackNavigationParams = {
   splash: undefined;
   home: undefined;
-  grade: undefined;
-  word: undefined;
-  find: undefined;
-  memory: undefined;
-  bingo: undefined;
-  practice: undefined;
-  setting: undefined;
+  preprimary: undefined;
 };
 const Navigation = () => {
   const dispatch = useDispatch();
@@ -30,6 +26,8 @@ const Navigation = () => {
         screenOptions={{headerShown: false}}
         initialRouteName="splash">
         <Stack.Screen name="home" component={Home} />
+        <Stack.Screen name="splash" component={Splash} />
+        <Stack.Screen name="preprimary" component={PrePrimary} />
       </Stack.Navigator>
     </NavigationContainer>
   );

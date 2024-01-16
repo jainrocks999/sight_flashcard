@@ -1,4 +1,8 @@
 {
   "name": "SightCards",
-  "displayName": "SightCards"
+  "displayName": "SightCards",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-3339897183017333~7197749989",
+    "ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
+  }
 }

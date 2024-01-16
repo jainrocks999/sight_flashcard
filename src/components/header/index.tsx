@@ -10,51 +10,41 @@ import {useSelector} from 'react-redux';
 import {rootState} from '../../redux';
 type props = {
   page: string;
-  isHard: boolean;
-  disabled: boolean;
   onLeftPress: () => void;
   onRightPress: () => void;
-  onCenterPress: () => void;
   isMuted: boolean;
-  isRightDisabled: boolean;
 };
 
 const Header: React.FC<props> = ({
   page,
   onLeftPress,
   onRightPress,
-  onCenterPress,
-  isHard,
-  disabled,
   isMuted,
-  isRightDisabled,
 }) => {
-  const grade = useSelector((state: rootState) => state.data.grade) as
-    | 'tblWord'
-    | 'tblWordG2'
-    | string;
   return (
-    <View style={[styles.container, {paddingTop: hp(3)}]}>
-      <TouchableOpacity onPress={onLeftPress} style={styles.headerItem}>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: page == 'lern' ? 'grey' : undefined},
+      ]}>
+      <TouchableOpacity
+        onPress={onLeftPress}
+        style={[
+          styles.headerItem,
+          page == 'lern' ? styles.roundHeaderItem : undefined,
+        ]}>
         <Image
-          style={styles.icon}
+          style={[styles.icon, {height: hp(7), width: hp(7), marginTop: '30%'}]}
           source={
-            page == 'find'
-              ? require('../../asset/images/settings.png')
-              : page == 'bingo'
-              ? require('../../asset/images/settings.png')
-              : isMuted
-              ? require('../../asset/images/musicon.png')
-              : require('../../asset/images/musicoff.png')
+            page == 'lern'
+              ? require('../../assets/images/home_btn.png')
+              : require('../../assets/images/speakar57.png')
           }
           resizeMode="contain"
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={onCenterPress}
-        disabled={disabled}
-        style={styles.headerItem}>
-        <Image
+      <TouchableOpacity disabled={true} style={styles.headerItem}>
+        {/* <Image
           style={[page == 'bingo' ? styles.reapeate : styles.title]}
           source={
             page == 'bingo'
@@ -64,33 +54,21 @@ const Header: React.FC<props> = ({
               : require('../../asset/images/npreprimary.png')
           }
           resizeMode="contain"
-        />
+        /> */}
       </TouchableOpacity>
       <TouchableOpacity
-        disabled={isRightDisabled}
         onPress={onRightPress}
-        style={styles.headerItem}>
+        style={[
+          styles.headerItem,
+          page == 'lern' ? styles.roundHeaderItem : undefined,
+          {marginRight: '-3%'},
+        ]}>
         <Image
-          style={[
-            styles.icon,
-            {marginRight: wp(2)},
-            page == 'find'
-              ? {height: hp(5), width: wp(18)}
-              : page == 'bingo'
-              ? {
-                  height: hp(8),
-                  width: hp(8),
-                }
-              : null,
-          ]}
+          style={[styles.icon]}
           source={
-            page == 'find'
-              ? !isHard
-                ? require('../../asset/images/easy.png')
-                : require('../../asset/images/hard.png')
-              : page == 'bingo'
-              ? require('../../asset/images/hmbtnbingo.png')
-              : require('../../asset/images/settings.png')
+            page == 'lern'
+              ? require('../../assets/images/setting_icn.png')
+              : require('../../assets/images/setting_icn.png')
           }
           resizeMode="contain"
         />
@@ -103,20 +81,20 @@ export default Header;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: wp(2),
-    paddingTop: hp(2),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: hp(7),
   },
   headerItem: {
     justifyContent: 'center',
-    height: hp(6),
+    height: hp(7),
   },
   icon: {
-    height: '100%',
-    width: hp(6),
-    alignSelf: 'flex-start',
+    height: hp(6.5),
+    width: hp(6.5),
+    // alignSelf: 'flex-start',
+    marginTop: '20%',
   },
   title: {
     height: hp(5),
@@ -126,5 +104,13 @@ const styles = StyleSheet.create({
   reapeate: {
     height: hp(9),
     width: hp(9),
+  },
+  roundHeaderItem: {
+    height: hp(11),
+    width: hp(11),
+    borderRadius: hp(5.5),
+    backgroundColor: 'grey',
+    alignItems: 'center',
+    marginLeft: '-3%',
   },
 });

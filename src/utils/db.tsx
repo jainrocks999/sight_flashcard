@@ -2,12 +2,12 @@ import {dbData} from '../types';
 
 var SQLite = require('react-native-sqlite-storage');
 const db = SQLite.openDatabase({
-  name: 'dbSightWordsSecond.db',
+  name: 'SightCards.db',
   createFromLocation: 1,
 });
 export default async (name: string) => {
   return name != ''
-    ? new Promise<dbData>((resolve, reject) => {
+    ? new Promise<any>((resolve, reject) => {
         let data: any = [];
         db.transaction((tx: any) => {
           tx.executeSql(

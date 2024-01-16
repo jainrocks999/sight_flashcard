@@ -1,7 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
-import type {dbData, random} from '../../types';
+import type {dbData, random, settings} from '../../types';
 const initialState = {
   dbData: [] as dbData,
+  settings: [] as settings,
   random: {random: false} as random,
   backSound: {
     word: false,
@@ -19,6 +20,12 @@ const reducer = createSlice({
   reducers: {
     setPageChange: (state, action) => {
       return {...state, page: action.payload};
+    },
+    getDbData: (state, action) => {
+      return {...state, dbData: action.payload};
+    },
+    getSettings: (state, action) => {
+      return {...state, settings: action.payload};
     },
   },
 });
