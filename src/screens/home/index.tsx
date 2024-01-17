@@ -1,12 +1,30 @@
-import {View, Text, ImageBackground, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {View, ImageBackground, TouchableOpacity} from 'react-native';
+import React, {useEffect} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {StackNavigationParams} from '../../components/navigation';
 import styles from './styles';
 import Header from '../../components/header';
 import {Image} from 'react-native-animatable';
+import {
+  GAMBannerAd,
+  BannerAdSize,
+  TestIds,
+  InterstitialAd,
+  AdEventType,
+} from 'react-native-google-mobile-ads';
 type Props = StackScreenProps<StackNavigationParams, 'home'>;
 const Home: React.FC<Props> = ({navigation}) => {
+  const intrial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+    requestNonPersonalizedAdsOnly: false,
+  });
+  useEffect(() => {
+    const unsubscrib = intrial.addAdEventListener(AdEventType.LOADED, () => {
+      intrial.show();
+    });
+    intrial.load();
+
+    return unsubscrib;
+  }, []);
   return (
     <ImageBackground
       resizeMode="stretch"
@@ -80,6 +98,16 @@ const Home: React.FC<Props> = ({navigation}) => {
             />
           </TouchableOpacity>
         </View>
+      </View>
+
+      <View style={{position: 'absolute', bottom: 0}}>
+        <GAMBannerAd
+          unitId={'ca-app-pub-3339897183017333/6778947585'}
+          sizes={[BannerAdSize.FULL_BANNER]}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
       </View>
     </ImageBackground>
   );

@@ -1,8 +1,8 @@
 {
   "name": "SightCards",
-  "displayName": "SightCards",
+  "displayName": "Sightwords Flashcards for Kids",
   "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-3339897183017333~7197749989",
+    "android_app_id": "ca-app-pub-3339897183017333~5302214382",
     "ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
   }
 }
