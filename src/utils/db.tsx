@@ -5,13 +5,13 @@ const db = SQLite.openDatabase({
   name: 'SightCards.db',
   createFromLocation: 1,
 });
-export default async (name: string) => {
+export default async (name: string, query: string) => {
   return name != ''
     ? new Promise<any>((resolve, reject) => {
         let data: any = [];
         db.transaction((tx: any) => {
           tx.executeSql(
-            `SELECT * FROM ${name}`,
+            query != '' ? query : `SELECT * FROM ${name}`,
             [],
             (tx: any, results: any) => {
               let len = results.rows.length;

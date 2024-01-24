@@ -1,18 +1,24 @@
 import {createSlice} from '@reduxjs/toolkit';
-import type {dbData, random, settings} from '../../types';
+import type {dbData, random, setting, settings} from '../../types';
 const initialState = {
   dbData: [] as dbData,
-  settings: [] as settings,
+  settings: {} as setting,
   random: {random: false} as random,
   backSound: {
-    word: false,
-    find: false,
-    memory: false,
-    bingo: false,
-    home: false,
+    normal: false,
+    question: false,
   },
+  Catagory: '' as
+    | 'Primary'
+    | 'Kinder'
+    | 'GradeOne'
+    | 'GradeTwo'
+    | 'AllIntOne'
+    | 'practice'
+    | '',
   page: 'home',
   grade: 'tblWord',
+  welcomSound: true,
 };
 const reducer = createSlice({
   name: 'sightCards',
@@ -27,6 +33,16 @@ const reducer = createSlice({
     getSettings: (state, action) => {
       return {...state, settings: action.payload};
     },
+    setPage: (state, action) => {
+      return {...state, Catagory: action.payload};
+    },
+    isWelcomeSound: (state, action) => {
+      return {...state, welcomSound: action.payload};
+    },
+    getBackSound: (state, action) => {
+      return {...state, backSound: action.payload};
+    },
   },
 });
+export const {isWelcomeSound, getBackSound} = reducer.actions;
 export default reducer.reducer;

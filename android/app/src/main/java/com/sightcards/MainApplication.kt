@@ -1,4 +1,4 @@
-package com.SightCards
+package com.SightCardsNew
 
 import android.app.Application
 import com.facebook.react.PackageList

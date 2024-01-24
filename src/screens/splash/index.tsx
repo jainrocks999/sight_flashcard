@@ -5,6 +5,7 @@ import {StackNavigationParams} from '../../components/navigation';
 import {Image} from 'react-native-animatable';
 import db from '../../utils/db';
 import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 type Props = StackScreenProps<StackNavigationParams, 'splash'>;
 const Splash: React.FC<Props> = ({navigation}) => {
   useEffect(() => {
@@ -18,15 +19,16 @@ const Splash: React.FC<Props> = ({navigation}) => {
   }, []);
   const dispatch = useDispatch();
   const getData = async () => {
-    const data = await db('tbl_items');
-    const setting = await db('tbl_settings');
+    const data = await db('tbl_items', '');
+    const setting = await db('tbl_settings', '');
+    const setting2 = await AsyncStorage.getItem('setting');
     dispatch({
       type: 'sightCards/getDbData',
       payload: data,
     });
     dispatch({
       type: 'sightCards/getSettings',
-      payload: setting,
+      payload: setting2 != null ? JSON.parse(setting2) : setting[0],
     });
   };
   return (

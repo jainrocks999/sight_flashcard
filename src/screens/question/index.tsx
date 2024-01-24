@@ -1,0 +1,319 @@
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  ImageBackground,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+  BackHandler,
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import Animated, {
+  useSharedValue,
+  Easing,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
+import {StackScreenProps} from '@react-navigation/stack';
+import {StackNavigationParams} from '../../components/navigation';
+import styles from './styles';
+import Header from '../../components/header';
+import {rootState} from '../../redux';
+import {createAnimatableComponent} from 'react-native-animatable';
+import {setupPlayer} from '../../utils/Setup';
+import playerCopy from '../../utils/player copy';
+import {dbData} from '../../types';
+import {
+  BannerAdSize,
+  GAMBannerAd,
+  TestIds,
+} from 'react-native-google-mobile-ads';
+import {rightVoice, wrongVoice} from '../../utils/RightWrongVoice';
+import {getBackSound} from '../../redux/reducers';
+import TrackPlayer from 'react-native-track-player';
+import {heightPercent} from '../../utils/ResponsiveScreen';
+
+type Props = StackScreenProps<StackNavigationParams, 'question'>;
+const AnimatedFlatlist = createAnimatableComponent(FlatList);
+
+const Question: React.FC<Props> = ({navigation}) => {
+  const backSound = useSelector((state: rootState) => state.data.backSound);
+  const dbdata = useSelector((state: rootState) => state.data.dbData);
+  const Category = useSelector((state: rootState) => state.data.Catagory);
+  const [data, setData] = useState<dbData>([]);
+  const [rightAns, setRightAns] = useState<number>(-1);
+  const radnomAray = (array: dbData, lenght: number) => {
+    return new Promise<dbData>((resovle, reject) => {
+      const newArray = [...array];
+      let randomArray: any[] = [];
+      for (let i = 0; i < lenght; i++) {
+        const randomIndex = Math.floor(Math.random() * newArray.length);
+        const selectedElement = newArray.splice(randomIndex, 1)[0];
+        randomArray.push(selectedElement);
+      }
+      resovle(randomArray);
+    });
+  };
+  const formatDatawithCat = async (dbData: dbData) => {
+    const pr = await new Promise<dbData>(resovle => {
+      let forMateWithCategory: dbData = [];
+      if (Category != 'AllIntOne') {
+        forMateWithCategory = dbData.filter(
+          (item, index) => item.Category == Category,
+        );
+      } else {
+        forMateWithCategory = dbData;
+      }
+      resovle(forMateWithCategory);
+    });
+    return pr;
+  };
+  const [randomData, setRandomData] = useState<dbData>([...dbdata.slice(0, 4)]);
+
+  useEffect(() => {
+    setTodata();
+  }, [Category]);
+  const [navi, setNavi] = useState(true);
+  const setTodata = async () => {
+    const forMateWithCategory = await formatDatawithCat([...dbdata]);
+    const random = await radnomAray(forMateWithCategory, 4);
+    setRandomData(random);
+    setData(forMateWithCategory);
+    if (navi) {
+      const ind = await getIndex();
+      askQuestion(random, ind);
+      setNavi(false);
+    }
+  };
+  useEffect(() => {
+    !backSound.question ? askQuestion(randomData, rightAns) : null;
+  }, [backSound]);
+  const [count, setCount] = useState(0);
+  const translateX = useSharedValue(0);
+  const {width} = Dimensions.get('window');
+  const [worng, setWorng] = useState<number[]>([]);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateX: translateX.value}],
+    };
+  });
+  const getIndex = () => {
+    return new Promise<number>(resolve => {
+      const rightIndex = Math.floor(Math.random() * 3);
+      setRightAns(rightIndex);
+      resolve(rightIndex);
+    });
+  };
+
+  const askQuestion = async (theData: dbData, rightIndex: number) => {
+    const track = {
+      url: 'asset:/files/clickon.mp3',
+      title: 'soundclick',
+      artist: 'eFlashApps',
+      artwork: 'asset:/files/clickon.mp3',
+      duration: 5,
+    };
+    const track2 = {
+      url: `asset:/files/${theData[rightIndex].Sound}`,
+      title: theData[rightIndex].Title,
+      artist: 'eFlashApps',
+      artwork: `asset:/files/${theData[rightIndex].Sound}`,
+      duration: 5,
+    };
+
+    await playerCopy([track, track2]);
+  };
+  const praised = async (index: number) => {
+    let traxck;
+    let track2;
+    traxck = wrongVoice.sort(() => Math.random() - 0.5)[1];
+    track2 = rightVoice.sort(() => Math.random() - 0.5)[1];
+
+    if (index === rightAns) {
+      const arr = [0, 1, 2, 3].filter(item => item != index);
+      setWorng(arr);
+      await playerCopy([track2]);
+      setTimeout(async () => {
+        setWorng([]);
+        const shuffledData = await radnomAray([...dbdata], 4);
+        const ind = await getIndex();
+        setRandomData(shuffledData);
+        askQuestion(shuffledData, ind);
+        handleSlide(count);
+        setCount(prev => prev + 1);
+      }, 2000);
+    } else {
+      await playerCopy([traxck]);
+      switch (index) {
+        case 0:
+          setWorng(prev => [...prev, 0]);
+          break;
+        case 1:
+          setWorng(prev => [...prev, 1]);
+          break;
+        case 2:
+          setWorng(prev => [...prev, 2]);
+          break;
+        case 3:
+          setWorng(prev => [...prev, 3]);
+          break;
+      }
+    }
+  };
+
+  const handleSlide = async (nextIndex: number) => {
+    const targetTranslateX = -width;
+    const direction = count < nextIndex ? 1 : -1;
+
+    translateX.value = withTiming(targetTranslateX * direction, {
+      duration: 0,
+      easing: Easing.linear,
+    });
+
+    setTimeout(async () => {
+      translateX.value = withTiming(0, {
+        duration: 200,
+        easing: Easing.linear,
+      });
+    }, 300);
+
+    setCount(nextIndex);
+  };
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const back = BackHandler.addEventListener('hardwareBackPress', () => {
+      navigation.reset({index: 0, routes: [{name: 'home'}]});
+      return true;
+    });
+    return () => back.remove();
+  }, [navigation]);
+
+  return (
+    <View style={styles.container}>
+      <Header
+        isMuted={false}
+        onLeftPress={() => console.log('something')}
+        onRightPress={async () => {
+          await TrackPlayer.reset();
+          dispatch(getBackSound({normal: false, question: true}));
+          navigation.navigate('setting', {page: 'rtrt'});
+        }}
+        onCenterPress={() => {
+          askQuestion(randomData, rightAns);
+        }}
+        details={true}
+        isQuestion
+        isAddeToPractice={false}
+        page="lern"
+      />
+      <View style={{zIndex: -1, marginTop: heightPercent(2)}}>
+        <AnimatedFlatlist
+          data={data}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={count}
+          getItemLayout={(data, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
+          scrollEnabled={false}
+          renderItem={({item, index}) => {
+            return (
+              <Animated.View style={[styles.container2, animatedStyle]}>
+                <View style={styles.questionQontainer}>
+                  <FlatList
+                    data={randomData}
+                    numColumns={2}
+                    keyExtractor={item => item._id.toString()}
+                    renderItem={({item, index}) => (
+                      <TouchableOpacity onPress={() => praised(index)}>
+                        <ImageBackground
+                          source={
+                            Category == 'Kinder'
+                              ? require('../../assets/images/kinder.jpg')
+                              : Category == 'GradeOne'
+                              ? require('../../assets/images/gradeone.jpg')
+                              : Category == 'GradeTwo'
+                              ? require('../../assets/images/gradetwo.jpg')
+                              : Category == 'Primary'
+                              ? require('../../assets/images/primary.png')
+                              : require('../../assets/images/all_in_one.jpg')
+                          }
+                          style={styles.questionItem}
+                          resizeMode="stretch">
+                          <Text
+                            style={[
+                              styles.txt,
+                              Category == 'GradeTwo'
+                                ? {marginTop: '25%'}
+                                : undefined,
+                            ]}>
+                            {item.Title}
+                          </Text>
+                        </ImageBackground>
+                        {worng.includes(index) ? (
+                          <Image
+                            source={require('../../assets/images/wrongselection.png')}
+                            style={[
+                              styles.questionItem,
+                              {position: 'absolute'},
+                            ]}
+                            resizeMode="stretch"
+                          />
+                        ) : null}
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
+              </Animated.View>
+            );
+          }}
+        />
+      </View>
+      {/* <View style={styles.btnContainer}>
+        <TouchableOpacity
+          disabled={count === 0}
+          onPress={() => handleSlide(count - 1)}
+          style={styles.touchable}>
+          <Image
+            style={styles.btn}
+            resizeMode="contain"
+            source={require('../../assets/images/previous.png')}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.touchable}>
+          <Image
+            style={styles.btn}
+            resizeMode="contain"
+            source={require('../../assets/images/repeat.png')}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={count === data.length - 1 ? true : false}
+          onPress={() => handleSlide(count + 1)}
+          style={styles.touchable}>
+          <Image
+            style={styles.btn}
+            resizeMode="contain"
+            source={require('../../assets/images/nextt.png')}
+          />
+        </TouchableOpacity>
+      </View> */}
+      {/* <View style={{position: 'absolute', bottom: 0}}>
+        <GAMBannerAd
+          unitId={TestIds.BANNER}
+          sizes={[BannerAdSize.FULL_BANNER]}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
+      </View> */}
+    </View>
+  );
+};
+
+export default Question;

@@ -13,6 +13,10 @@ type props = {
   onLeftPress: () => void;
   onRightPress: () => void;
   isMuted: boolean;
+  details: boolean;
+  isAddeToPractice: boolean;
+  onCenterPress: () => void;
+  isQuestion: boolean;
 };
 
 const Header: React.FC<props> = ({
@@ -20,12 +24,19 @@ const Header: React.FC<props> = ({
   onLeftPress,
   onRightPress,
   isMuted,
+  details,
+  isAddeToPractice,
+  onCenterPress,
+  isQuestion,
 }) => {
   return (
     <View
       style={[
         styles.container,
-        {backgroundColor: page == 'lern' ? 'grey' : undefined},
+        {
+          backgroundColor: page == 'lern' ? 'grey' : undefined,
+          paddingHorizontal: page != 'lern' ? wp(2) : undefined,
+        },
       ]}>
       <TouchableOpacity
         onPress={onLeftPress}
@@ -34,34 +45,46 @@ const Header: React.FC<props> = ({
           page == 'lern' ? styles.roundHeaderItem : undefined,
         ]}>
         <Image
-          style={[styles.icon, {height: hp(7), width: hp(7), marginTop: '30%'}]}
+          style={[
+            styles.icon,
+            {height: hp(6.4), width: hp(6.5), marginTop: '30%'},
+          ]}
           source={
             page == 'lern'
               ? require('../../assets/images/home_btn.png')
-              : require('../../assets/images/speakar57.png')
+              : isMuted
+              ? require('../../assets/images/speakar57.png')
+              : require('../../assets/images/speakar58.png')
           }
           resizeMode="contain"
         />
       </TouchableOpacity>
-      <TouchableOpacity disabled={true} style={styles.headerItem}>
-        {/* <Image
-          style={[page == 'bingo' ? styles.reapeate : styles.title]}
-          source={
-            page == 'bingo'
-              ? require('../../asset/images/repeatbingo.png')
-              : grade == 'tblWord'
-              ? require('../../asset/images/nprimary.png') //npreprimary
-              : require('../../asset/images/npreprimary.png')
-          }
-          resizeMode="contain"
-        /> */}
+      <TouchableOpacity
+        onPress={onCenterPress}
+        disabled={!details}
+        style={styles.headerItem}>
+        {details ? (
+          <Image
+            style={[page == 'bingo' ? styles.reapeate : styles.title]}
+            source={
+              isQuestion
+                ? require('../../assets/images/repeat.png')
+                : isAddeToPractice
+                ? require('../../assets/images/flag_re.png')
+                : require('../../assets/images/flag.png')
+            }
+            resizeMode="contain"
+          />
+        ) : null}
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onRightPress}
         style={[
           styles.headerItem,
           page == 'lern' ? styles.roundHeaderItem : undefined,
-          {marginRight: '-3%'},
+          page == 'lern'
+            ? {marginRight: '-3%'}
+            : {height: hp(10), width: 'auto'},
         ]}>
         <Image
           style={[styles.icon]}

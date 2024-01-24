@@ -15,9 +15,9 @@ export type random = {
 export type settings = setting[]
 
 export interface setting {
-  Question: string
-  Swipe: string
-  RandomOrder: string
-  Voice: string
+  Question: number
+  Swipe: number
+  RandomOrder: number
+  Voice: number
   _id: number
 }

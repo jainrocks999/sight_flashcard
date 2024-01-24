@@ -12,8 +12,6 @@ export default StyleSheet.create({
   container2: {
     height: hp(82),
     width: wp(100),
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   btnContainer: {
     backgroundColor: 'grey',
@@ -32,8 +30,21 @@ export default StyleSheet.create({
     width: '100%',
   },
   txt: {
-    fontSize: wp(10),
-    fontWeight: '800',
+    fontSize: wp(5),
+    fontWeight: 'bold',
     color: 'black',
+  },
+  questionItem: {
+    height: hp(37),
+    width: wp(46),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: hp(1),
+    marginHorizontal: wp(2),
+  },
+  questionQontainer: {
+    height: '100%',
+    width: '100%',
+    paddingTop: '12%',
   },
 });
