@@ -25,15 +25,12 @@ import {createAnimatableComponent} from 'react-native-animatable';
 import {setupPlayer} from '../../utils/Setup';
 import playerCopy from '../../utils/player copy';
 import {dbData} from '../../types';
-import {
-  BannerAdSize,
-  GAMBannerAd,
-  TestIds,
-} from 'react-native-google-mobile-ads';
+import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
 import {rightVoice, wrongVoice} from '../../utils/RightWrongVoice';
 import {getBackSound} from '../../redux/reducers';
 import TrackPlayer from 'react-native-track-player';
 import {heightPercent} from '../../utils/ResponsiveScreen';
+import showAdd, {addIds} from '../../utils/ads';
 
 type Props = StackScreenProps<StackNavigationParams, 'question'>;
 const AnimatedFlatlist = createAnimatableComponent(FlatList);
@@ -125,6 +122,7 @@ const Question: React.FC<Props> = ({navigation}) => {
 
     await playerCopy([track, track2]);
   };
+
   const praised = async (index: number) => {
     let traxck;
     let track2;
@@ -143,7 +141,7 @@ const Question: React.FC<Props> = ({navigation}) => {
         askQuestion(shuffledData, ind);
         handleSlide(count);
         setCount(prev => prev + 1);
-      }, 2000);
+      }, 1500);
     } else {
       await playerCopy([traxck]);
       switch (index) {
@@ -178,6 +176,9 @@ const Question: React.FC<Props> = ({navigation}) => {
         easing: Easing.linear,
       });
     }, 300);
+    if (count % 10 == 0) {
+      showAdd();
+    }
 
     setCount(nextIndex);
   };
@@ -208,7 +209,7 @@ const Question: React.FC<Props> = ({navigation}) => {
         isAddeToPractice={false}
         page="lern"
       />
-      <View style={{zIndex: -1, marginTop: heightPercent(2)}}>
+      <View style={{zIndex: -1, marginTop: heightPercent(0.1)}}>
         <AnimatedFlatlist
           data={data}
           horizontal
@@ -230,7 +231,9 @@ const Question: React.FC<Props> = ({navigation}) => {
                     numColumns={2}
                     keyExtractor={item => item._id.toString()}
                     renderItem={({item, index}) => (
-                      <TouchableOpacity onPress={() => praised(index)}>
+                      <TouchableOpacity
+                        disabled={worng.includes(index)}
+                        onPress={() => praised(index)}>
                         <ImageBackground
                           source={
                             Category == 'Kinder'
@@ -303,15 +306,15 @@ const Question: React.FC<Props> = ({navigation}) => {
           />
         </TouchableOpacity>
       </View> */}
-      {/* <View style={{position: 'absolute', bottom: 0}}>
+      <View style={{position: 'absolute', bottom: 0}}>
         <GAMBannerAd
-          unitId={TestIds.BANNER}
+          unitId={addIds.BANNER}
           sizes={[BannerAdSize.FULL_BANNER]}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,
           }}
         />
-      </View> */}
+      </View>
     </View>
   );
 };

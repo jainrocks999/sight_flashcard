@@ -32,6 +32,8 @@ import {getBackSound} from '../../redux/reducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyModal from '../../components/Modal';
 import db from '../../utils/db';
+import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
+import showAdd, {addIds} from '../../utils/ads';
 
 type Props = StackScreenProps<StackNavigationParams, 'preprimary'>;
 const AnimatedFlatlist = createAnimatableComponent(FlatList);
@@ -176,6 +178,9 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
       duration: 0,
       easing: Easing.linear,
     });
+    if (count % 10 == 0) {
+      showAdd();
+    }
 
     setTimeout(async () => {
       translateX.value = withTiming(0, {
@@ -290,7 +295,7 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
                 <Animated.View
                   style={[
                     styles.container2,
-                    setting.Swipe == 1 && {flex: 1},
+                    setting.Swipe == 1 && {height: heightPercent(85)},
                     animatedStyle,
                   ]}>
                   <ImageBackground
@@ -305,7 +310,10 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
                         ? require('../../assets/images/all_in_one.jpg')
                         : require('../../assets/images/primary.png') //primary
                     }
-                    style={styles.container2}
+                    style={[
+                      styles.container2,
+                      setting.Swipe == 1 && {height: heightPercent(85)},
+                    ]}
                     resizeMode="stretch">
                     <Text
                       style={[
@@ -361,6 +369,15 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
             </TouchableOpacity>
           </View>
         ) : null}
+      </View>
+      <View style={{position: 'absolute', bottom: 0}}>
+        <GAMBannerAd
+          unitId={addIds.BANNER}
+          sizes={[BannerAdSize.FULL_BANNER]}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
       </View>
     </GestureRecognizer>
   );

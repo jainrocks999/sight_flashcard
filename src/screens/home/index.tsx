@@ -5,41 +5,19 @@ import {StackNavigationParams} from '../../components/navigation';
 import styles from './styles';
 import Header from '../../components/header';
 import {Image} from 'react-native-animatable';
-import {
-  GAMBannerAd,
-  BannerAdSize,
-  TestIds,
-  InterstitialAd,
-  AdEventType,
-} from 'react-native-google-mobile-ads';
+import {GAMBannerAd, BannerAdSize} from 'react-native-google-mobile-ads';
 import {useDispatch, useSelector} from 'react-redux';
 import {rootState} from '../../redux';
 import playerCopy from '../../utils/player copy';
 import {getBackSound, isWelcomeSound} from '../../redux/reducers';
 import TrackPlayer from 'react-native-track-player';
 import MyModal from '../../components/Modal';
+import {addIds} from '../../utils/ads';
 type Props = StackScreenProps<StackNavigationParams, 'home'>;
 const Home: React.FC<Props> = ({navigation}) => {
   const welcomSound = useSelector((state: rootState) => state.data.welcomSound);
   const setting = useSelector((state: rootState) => state.data.settings);
-  const intrial = InterstitialAd.createForAdRequest(
-    TestIds.INTERSTITIAL,
-    //ca-app-pub-3339897183017333/6778947585,
-    {
-      requestNonPersonalizedAdsOnly: false,
-    },
-  );
-  // useEffect(() => {
-  //   try {
-  //     const unsubscrib = intrial.addAdEventListener(AdEventType.LOADED, () => {
-  //       intrial.show();
-  //     });
-  //     intrial.load();
-  //     return unsubscrib;
-  //   } catch (erro) {
-  //     console.log('error', erro);
-  //   }
-  // }, []);
+
   const dispatcch = useDispatch();
   const handleNaviagtion = async (page: string) => {
     await TrackPlayer.reset();
@@ -167,6 +145,7 @@ const Home: React.FC<Props> = ({navigation}) => {
           <TouchableOpacity
             onPress={() => {
               handleNaviagtion('practice');
+              // showAd();
             }}
             style={styles.secondBtn}>
             <Image
@@ -189,18 +168,15 @@ const Home: React.FC<Props> = ({navigation}) => {
         </View>
       </View>
 
-      {/* <View style={{position: 'absolute', bottom: 0}}>
+      <View style={{position: 'absolute', bottom: 0}}>
         <GAMBannerAd
-          unitId={
-            //'ca-app-pub-3339897183017333/5302214382'
-            TestIds.BANNER
-          }
+          unitId={addIds.BANNER}
           sizes={[BannerAdSize.FULL_BANNER]}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,
           }}
         />
-      </View> */}
+      </View>
     </ImageBackground>
   );
 };

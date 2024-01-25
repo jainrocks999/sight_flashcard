@@ -6,24 +6,25 @@ import {
 
 export default StyleSheet.create({
   container: {
-    height: '90%',
+    height: '72%',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: hp(10),
   },
   settingBg: {
-    height: hp(50),
+    height: hp(45),
     width: wp(80),
     alignItems: 'center',
     paddingTop: '15%',
   },
   btncontainer: {
-    flex: 1,
     backgroundColor: 'black',
     opacity: 0.7,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    height: hp(9),
   },
   image: {
     height: '100%',

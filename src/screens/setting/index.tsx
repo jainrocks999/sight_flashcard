@@ -17,6 +17,8 @@ import {Image} from 'react-native-animatable';
 import playerCopy from '../../utils/player copy';
 import TrackPlayer from 'react-native-track-player';
 import {getBackSound, isWelcomeSound} from '../../redux/reducers';
+import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
+import {addIds} from '../../utils/ads';
 type Props = StackScreenProps<StackNavigationParams, 'setting'>;
 const Setting: React.FC<Props> = ({navigation, route}) => {
   const backSound = useSelector((state: rootState) => state.data.backSound);
@@ -191,6 +193,10 @@ const Setting: React.FC<Props> = ({navigation, route}) => {
         <TouchableOpacity
           onPress={() => {
             if (page == 'home') {
+              dispatch({
+                type: 'sightCards/getSettings',
+                payload: setting,
+              });
               navigation.reset({index: 0, routes: [{name: 'home'}]});
             } else {
               onSaveCancel('save');
@@ -203,6 +209,15 @@ const Setting: React.FC<Props> = ({navigation, route}) => {
             source={require('../../assets/images/save.png')}
           />
         </TouchableOpacity>
+      </View>
+      <View style={{position: 'absolute', bottom: 0}}>
+        <GAMBannerAd
+          unitId={addIds.BANNER}
+          sizes={[BannerAdSize.FULL_BANNER]}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
       </View>
     </ImageBackground>
   );

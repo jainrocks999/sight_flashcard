@@ -10,7 +10,7 @@ export default StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   container2: {
-    height: hp(82),
+    height: hp(75),
     width: wp(100),
     alignItems: 'center',
     justifyContent: 'center',
