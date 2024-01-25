@@ -195,7 +195,9 @@ const Question: React.FC<Props> = ({navigation}) => {
     <View style={styles.container}>
       <Header
         isMuted={false}
-        onLeftPress={() => console.log('something')}
+        onLeftPress={() =>
+          navigation.reset({index: 0, routes: [{name: 'home'}]})
+        }
         onRightPress={async () => {
           await TrackPlayer.reset();
           dispatch(getBackSound({normal: false, question: true}));
