@@ -43,6 +43,11 @@ const Question: React.FC<Props> = ({navigation}) => {
   const Category = useSelector((state: rootState) => state.data.Catagory);
   const [data, setData] = useState<dbData>([]);
   const [rightAns, setRightAns] = useState<number>(-1);
+  const [count, setCount] = useState(0);
+  const translateX = useSharedValue(0);
+  const {width} = Dimensions.get('window');
+  const [worng, setWorng] = useState<number[]>([]);
+  const [right, setRight] = useState<number[]>([]);
   const radnomAray = (array: dbData, lenght: number) => {
     return new Promise<dbData>((resovle, reject) => {
       const newArray = [...array];
@@ -89,10 +94,7 @@ const Question: React.FC<Props> = ({navigation}) => {
   useEffect(() => {
     !backSound.question ? askQuestion(randomData, rightAns) : null;
   }, [backSound]);
-  const [count, setCount] = useState(0);
-  const translateX = useSharedValue(0);
-  const {width} = Dimensions.get('window');
-  const [worng, setWorng] = useState<number[]>([]);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{translateX: translateX.value}],
@@ -132,11 +134,13 @@ const Question: React.FC<Props> = ({navigation}) => {
     track2 = rightVoice.sort(() => Math.random() - 0.5)[1];
 
     if (index === rightAns) {
+      setRight([index]);
       const arr = [0, 1, 2, 3].filter(item => item != index);
       setWorng(arr);
       await playerCopy([track2]);
       setTimeout(async () => {
         setWorng([]);
+        setRight([]);
         const shuffledData = await radnomAray([...dbdata], 4);
         const ind = await getIndex();
         setRandomData(shuffledData);
@@ -162,7 +166,6 @@ const Question: React.FC<Props> = ({navigation}) => {
       }
     }
   };
-  console.log('thtutjutut', count);
 
   const handleSlide = async (nextIndex: number) => {
     const targetTranslateX = -width;
@@ -246,7 +249,9 @@ const Question: React.FC<Props> = ({navigation}) => {
                     keyExtractor={item => item._id.toString()}
                     renderItem={({item, index}) => (
                       <TouchableOpacity
-                        disabled={worng.includes(index)}
+                        disabled={
+                          worng.includes(index) || right.includes(index)
+                        }
                         onPress={() => praised(index)}>
                         <ImageBackground
                           source={
