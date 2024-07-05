@@ -179,7 +179,7 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
       duration: 0,
       easing: Easing.linear,
     });
-    if (count % 10 == 0) {
+    if (count > 0 && count % 15 == 0) {
       !IAP?.hasPurchased && showAdd();
     }
 

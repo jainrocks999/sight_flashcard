@@ -162,6 +162,7 @@ const Question: React.FC<Props> = ({navigation}) => {
       }
     }
   };
+  console.log('thtutjutut', count);
 
   const handleSlide = async (nextIndex: number) => {
     const targetTranslateX = -width;
@@ -178,11 +179,13 @@ const Question: React.FC<Props> = ({navigation}) => {
         easing: Easing.linear,
       });
     }, 300);
-    if (count % 10 == 0) {
+    console.log('thssisisiisisissisi', count);
+
+    if (count > 0 && count % 15 == 0) {
       !IAP?.hasPurchased && showAdd();
     }
 
-    !IAP?.hasPurchased && setCount(nextIndex);
+    setCount(nextIndex);
   };
   const dispatch = useDispatch();
   useEffect(() => {

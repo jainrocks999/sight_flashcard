@@ -165,7 +165,7 @@ const Setting: React.FC<Props> = ({navigation, route}) => {
           />
           <Check
             isSelected={setting.Question}
-            title="Ouestion"
+            title="Question"
             onPress={handleOnBoxPress}
             name="Question"
           />
