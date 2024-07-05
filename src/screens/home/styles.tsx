@@ -34,7 +34,7 @@ export default StyleSheet.create({
   },
   practicemore: {
     flexDirection: 'row',
-    width: '50%',
+    width: '55%',
     alignSelf: 'flex-start',
     justifyContent: 'space-between',
     marginTop: hp(4),

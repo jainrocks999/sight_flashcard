@@ -79,9 +79,10 @@ android {
         applicationId "com.SightCardsNew"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         resConfigs "en", "US"
+        missingDimensionStrategy "store", "play"
     }
     signingConfigs {
         debug {

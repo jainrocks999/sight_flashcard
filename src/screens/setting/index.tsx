@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   BackHandler,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {StackNavigationParams} from '../../components/navigation';
 import styles from './styles';
@@ -19,8 +19,10 @@ import TrackPlayer from 'react-native-track-player';
 import {getBackSound, isWelcomeSound} from '../../redux/reducers';
 import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
 import {addIds} from '../../utils/ads';
+import {IAPContext} from '../../Context';
 type Props = StackScreenProps<StackNavigationParams, 'setting'>;
 const Setting: React.FC<Props> = ({navigation, route}) => {
+  const IAP = useContext(IAPContext);
   const backSound = useSelector((state: rootState) => state.data.backSound);
   const Category = useSelector((state: rootState) => state.data.Catagory);
   const page = route.params.page;
@@ -143,7 +145,8 @@ const Setting: React.FC<Props> = ({navigation, route}) => {
           }
         />
       </TouchableOpacity>
-      <View style={styles.container}>
+      <View
+        style={[styles.container, {height: IAP?.hasPurchased ? '81%' : '72%'}]}>
         <ImageBackground
           style={styles.settingBg}
           resizeMode="stretch"
@@ -210,15 +213,17 @@ const Setting: React.FC<Props> = ({navigation, route}) => {
           />
         </TouchableOpacity>
       </View>
-      <View style={{position: 'absolute', bottom: 0}}>
-        <GAMBannerAd
-          unitId={addIds.BANNER}
-          sizes={[BannerAdSize.FULL_BANNER]}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-      </View>
+      {!IAP?.hasPurchased && (
+        <View style={{position: 'absolute', bottom: 0}}>
+          <GAMBannerAd
+            unitId={addIds.BANNER}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+          />
+        </View>
+      )}
     </ImageBackground>
   );
 };

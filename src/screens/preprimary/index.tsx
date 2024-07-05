@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,6 @@ import {
   Dimensions,
   BackHandler,
   Alert,
-  ToastAndroid,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import Animated, {
@@ -27,18 +26,20 @@ import {createAnimatableComponent} from 'react-native-animatable';
 import playerCopy from '../../utils/player copy';
 import {dbData, dbItem} from '../../types';
 import GestureRecognizer from 'react-native-swipe-gestures';
-import {heightPercent} from '../../utils/ResponsiveScreen';
+import {heightPercent as hp} from '../../utils/ResponsiveScreen';
 import {getBackSound} from '../../redux/reducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyModal from '../../components/Modal';
 import db from '../../utils/db';
 import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
 import showAdd, {addIds} from '../../utils/ads';
+import {IAPContext} from '../../Context';
 
 type Props = StackScreenProps<StackNavigationParams, 'preprimary'>;
 const AnimatedFlatlist = createAnimatableComponent(FlatList);
 
 const PrePrimary: React.FC<Props> = ({navigation}) => {
+  const IAP = useContext(IAPContext);
   const dispatch = useDispatch();
   const dbdata = useSelector((state: rootState) => state.data.dbData);
   const backSound = useSelector((state: rootState) => state.data.backSound);
@@ -179,7 +180,7 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
       easing: Easing.linear,
     });
     if (count % 10 == 0) {
-      showAdd();
+      !IAP?.hasPurchased && showAdd();
     }
 
     setTimeout(async () => {
@@ -276,7 +277,15 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
           style={[
             {zIndex: -1},
             styles.container2,
-            setting.Swipe == 1 && {flex: 1},
+            {
+              height: IAP?.hasPurchased
+                ? setting.Swipe == 1
+                  ? hp(92)
+                  : hp(85)
+                : setting.Swipe == 1
+                ? hp(85)
+                : hp(75),
+            },
           ]}>
           <AnimatedFlatlist
             data={data}
@@ -295,7 +304,16 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
                 <Animated.View
                   style={[
                     styles.container2,
-                    setting.Swipe == 1 && {height: heightPercent(85)},
+                    setting.Swipe == 1 && {height: hp(85)},
+                    {
+                      height: IAP?.hasPurchased
+                        ? setting.Swipe == 1
+                          ? hp(92)
+                          : hp(85)
+                        : setting.Swipe == 1
+                        ? hp(85)
+                        : hp(75),
+                    },
                     animatedStyle,
                   ]}>
                   <ImageBackground
@@ -312,7 +330,15 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
                     }
                     style={[
                       styles.container2,
-                      setting.Swipe == 1 && {height: heightPercent(85)},
+                      {
+                        height: IAP?.hasPurchased
+                          ? setting.Swipe == 1
+                            ? hp(92)
+                            : hp(85)
+                          : setting.Swipe == 1
+                          ? hp(85)
+                          : hp(75),
+                      },
                     ]}
                     resizeMode="stretch">
                     <Text
@@ -370,15 +396,17 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
           </View>
         ) : null}
       </View>
-      <View style={{position: 'absolute', bottom: 0}}>
-        <GAMBannerAd
-          unitId={addIds.BANNER}
-          sizes={[BannerAdSize.FULL_BANNER]}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-      </View>
+      {!IAP?.hasPurchased && (
+        <View style={{position: 'absolute', bottom: 0}}>
+          <GAMBannerAd
+            unitId={addIds.BANNER}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+          />
+        </View>
+      )}
     </GestureRecognizer>
   );
 };

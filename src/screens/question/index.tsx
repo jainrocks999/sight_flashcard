@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -29,13 +29,15 @@ import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
 import {rightVoice, wrongVoice} from '../../utils/RightWrongVoice';
 import {getBackSound} from '../../redux/reducers';
 import TrackPlayer from 'react-native-track-player';
-import {heightPercent} from '../../utils/ResponsiveScreen';
+import {heightPercent as hp} from '../../utils/ResponsiveScreen';
 import showAdd, {addIds} from '../../utils/ads';
+import {IAPContext} from '../../Context';
 
 type Props = StackScreenProps<StackNavigationParams, 'question'>;
 const AnimatedFlatlist = createAnimatableComponent(FlatList);
 
 const Question: React.FC<Props> = ({navigation}) => {
+  const IAP = useContext(IAPContext);
   const backSound = useSelector((state: rootState) => state.data.backSound);
   const dbdata = useSelector((state: rootState) => state.data.dbData);
   const Category = useSelector((state: rootState) => state.data.Catagory);
@@ -177,10 +179,10 @@ const Question: React.FC<Props> = ({navigation}) => {
       });
     }, 300);
     if (count % 10 == 0) {
-      showAdd();
+      !IAP?.hasPurchased && showAdd();
     }
 
-    setCount(nextIndex);
+    !IAP?.hasPurchased && setCount(nextIndex);
   };
   const dispatch = useDispatch();
   useEffect(() => {
@@ -211,7 +213,7 @@ const Question: React.FC<Props> = ({navigation}) => {
         isAddeToPractice={false}
         page="lern"
       />
-      <View style={{zIndex: -1, marginTop: heightPercent(0.1)}}>
+      <View style={{zIndex: -1, marginTop: hp(0.1)}}>
         <AnimatedFlatlist
           data={data}
           horizontal
@@ -226,8 +228,15 @@ const Question: React.FC<Props> = ({navigation}) => {
           scrollEnabled={false}
           renderItem={({item, index}) => {
             return (
-              <Animated.View style={[styles.container2, animatedStyle]}>
-                <View style={styles.questionQontainer}>
+              <Animated.View
+                style={[
+                  styles.container2,
+                  {
+                    height: IAP?.hasPurchased ? hp(92) : hp(82),
+                  },
+                  animatedStyle,
+                ]}>
+                <View style={[styles.questionQontainer, ,]}>
                   <FlatList
                     data={randomData}
                     numColumns={2}
@@ -248,7 +257,10 @@ const Question: React.FC<Props> = ({navigation}) => {
                               ? require('../../assets/images/primary.png')
                               : require('../../assets/images/all_in_one.jpg')
                           }
-                          style={styles.questionItem}
+                          style={[
+                            styles.questionItem,
+                            {height: IAP?.hasPurchased ? hp(40) : hp(37)},
+                          ]}
                           resizeMode="stretch">
                           <Text
                             style={[
@@ -266,6 +278,7 @@ const Question: React.FC<Props> = ({navigation}) => {
                             style={[
                               styles.questionItem,
                               {position: 'absolute'},
+                              {height: IAP?.hasPurchased ? hp(40) : hp(37)},
                             ]}
                             resizeMode="stretch"
                           />
@@ -279,44 +292,17 @@ const Question: React.FC<Props> = ({navigation}) => {
           }}
         />
       </View>
-      {/* <View style={styles.btnContainer}>
-        <TouchableOpacity
-          disabled={count === 0}
-          onPress={() => handleSlide(count - 1)}
-          style={styles.touchable}>
-          <Image
-            style={styles.btn}
-            resizeMode="contain"
-            source={require('../../assets/images/previous.png')}
+      {!IAP?.hasPurchased && (
+        <View style={{position: 'absolute', bottom: 0}}>
+          <GAMBannerAd
+            unitId={addIds.BANNER}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
           />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.touchable}>
-          <Image
-            style={styles.btn}
-            resizeMode="contain"
-            source={require('../../assets/images/repeat.png')}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={count === data.length - 1 ? true : false}
-          onPress={() => handleSlide(count + 1)}
-          style={styles.touchable}>
-          <Image
-            style={styles.btn}
-            resizeMode="contain"
-            source={require('../../assets/images/nextt.png')}
-          />
-        </TouchableOpacity>
-      </View> */}
-      <View style={{position: 'absolute', bottom: 0}}>
-        <GAMBannerAd
-          unitId={addIds.BANNER}
-          sizes={[BannerAdSize.FULL_BANNER]}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-      </View>
+        </View>
+      )}
     </View>
   );
 };

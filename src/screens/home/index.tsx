@@ -1,5 +1,5 @@
 import {View, ImageBackground, TouchableOpacity, Linking} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {StackNavigationParams} from '../../components/navigation';
 import styles from './styles';
@@ -13,8 +13,11 @@ import {getBackSound, isWelcomeSound} from '../../redux/reducers';
 import TrackPlayer from 'react-native-track-player';
 import MyModal from '../../components/Modal';
 import {addIds} from '../../utils/ads';
+import {IAPContext} from '../../Context';
+import PurchasedeModal from '../../components/PurchaseModal';
 type Props = StackScreenProps<StackNavigationParams, 'home'>;
 const Home: React.FC<Props> = ({navigation}) => {
+  const IAP = useContext(IAPContext);
   const welcomSound = useSelector((state: rootState) => state.data.welcomSound);
   const setting = useSelector((state: rootState) => state.data.settings);
 
@@ -74,6 +77,20 @@ const Home: React.FC<Props> = ({navigation}) => {
         isQuestion={false}
       />
       <View style={styles.catagoryContainer}>
+        {!IAP?.hasPurchased && (
+          <PurchasedeModal
+            visible={IAP?.visible || false}
+            onRestore={() => {
+              IAP?.checkPurchases(true);
+            }}
+            onPress={() => {
+              IAP?.requestPurchase();
+            }}
+            onClose={val => {
+              IAP?.setVisible(false);
+            }}
+          />
+        )}
         <MyModal
           ishome
           isVisible={visible}
@@ -86,6 +103,7 @@ const Home: React.FC<Props> = ({navigation}) => {
             setIsvisible(bool);
           }}
         />
+
         <View style={styles.prekinderContainer}>
           <TouchableOpacity
             onPress={() => {
@@ -165,18 +183,33 @@ const Home: React.FC<Props> = ({navigation}) => {
               source={require('../../assets/images/moreapps.png')}
             />
           </TouchableOpacity>
+          {!IAP?.hasPurchased && (
+            <TouchableOpacity
+              onPress={() => {
+                IAP?.setVisible(true);
+              }}
+              style={styles.secondBtn}>
+              <Image
+                resizeMode="contain"
+                style={styles.img}
+                source={require('../../assets/images/ad-freennn.png')}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
-      <View style={{position: 'absolute', bottom: 0}}>
-        <GAMBannerAd
-          unitId={addIds.BANNER}
-          sizes={[BannerAdSize.FULL_BANNER]}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-      </View>
+      {!IAP?.hasPurchased && (
+        <View style={{position: 'absolute', bottom: 0}}>
+          <GAMBannerAd
+            unitId={addIds.BANNER}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+          />
+        </View>
+      )}
     </ImageBackground>
   );
 };

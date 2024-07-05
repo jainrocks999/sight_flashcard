@@ -19,8 +19,7 @@ export default StyleSheet.create({
     paddingTop: '15%',
   },
   btncontainer: {
-    backgroundColor: 'black',
-    opacity: 0.7,
+    backgroundColor: 'rgba(0,0,0,0.7)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
