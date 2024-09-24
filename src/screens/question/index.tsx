@@ -32,6 +32,7 @@ import TrackPlayer from 'react-native-track-player';
 import {heightPercent as hp} from '../../utils/ResponsiveScreen';
 import showAdd, {addIds} from '../../utils/ads';
 import {IAPContext} from '../../Context';
+import { path } from '../../utils/path';
 
 type Props = StackScreenProps<StackNavigationParams, 'question'>;
 const AnimatedFlatlist = createAnimatableComponent(FlatList);
@@ -45,7 +46,9 @@ const Question: React.FC<Props> = ({navigation}) => {
   const [rightAns, setRightAns] = useState<number>(-1);
   const [count, setCount] = useState(0);
   const translateX = useSharedValue(0);
-  const {width} = Dimensions.get('window');
+  const { width, height } = Dimensions.get("window");
+  const aspectRatio = height / width;
+  const IsIPAD = aspectRatio < 1.6;
   const [worng, setWorng] = useState<number[]>([]);
   const [right, setRight] = useState<number[]>([]);
   const radnomAray = (array: dbData, lenght: number) => {
@@ -110,17 +113,17 @@ const Question: React.FC<Props> = ({navigation}) => {
 
   const askQuestion = async (theData: dbData, rightIndex: number) => {
     const track = {
-      url: 'asset:/files/clickon.mp3',
+      url: `${path}clickon.mp3`,
       title: 'soundclick',
       artist: 'eFlashApps',
-      artwork: 'asset:/files/clickon.mp3',
+      artwork: `${path}clickon.mp3`,
       duration: 5,
     };
     const track2 = {
-      url: `asset:/files/${theData[rightIndex].Sound}`,
+      url: `${path}${theData[rightIndex].Sound}`,
       title: theData[rightIndex].Title,
       artist: 'eFlashApps',
-      artwork: `asset:/files/${theData[rightIndex].Sound}`,
+      artwork: `${path}${theData[rightIndex].Sound}`,
       duration: 5,
     };
 
@@ -267,7 +270,7 @@ const Question: React.FC<Props> = ({navigation}) => {
                           }
                           style={[
                             styles.questionItem,
-                            {height: IAP?.hasPurchased ? hp(40) : hp(37)},
+                            {height: IAP?.hasPurchased ? hp(40) :IsIPAD?hp(35): hp(33)},
                           ]}
                           resizeMode="stretch">
                           <Text
@@ -286,7 +289,7 @@ const Question: React.FC<Props> = ({navigation}) => {
                             style={[
                               styles.questionItem,
                               {position: 'absolute'},
-                              {height: IAP?.hasPurchased ? hp(40) : hp(37)},
+                              {height: IAP?.hasPurchased ? hp(40) :IsIPAD?hp(35): hp(33)},
                             ]}
                             resizeMode="stretch"
                           />

@@ -20,6 +20,7 @@ import {getBackSound, isWelcomeSound} from '../../redux/reducers';
 import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
 import {addIds} from '../../utils/ads';
 import {IAPContext} from '../../Context';
+import { path } from '../../utils/path';
 type Props = StackScreenProps<StackNavigationParams, 'setting'>;
 const Setting: React.FC<Props> = ({navigation, route}) => {
   const IAP = useContext(IAPContext);
@@ -103,10 +104,10 @@ const Setting: React.FC<Props> = ({navigation, route}) => {
   }, [welcomSound]);
   const playsound = async () => {
     const track = {
-      url: 'asset:/files/baby_flash_theme.mp3',
+      url: `${path}baby_flash_theme.mp3`,
       title: 'baby_flash_theme',
       artist: 'eFlashApps',
-      artwork: 'asset:/files/baby_flash_theme.mp3',
+      artwork: `${path}baby_flash_theme.mp3`,
       duration: 5,
     };
 

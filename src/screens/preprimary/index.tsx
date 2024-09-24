@@ -34,6 +34,7 @@ import db from '../../utils/db';
 import {BannerAdSize, GAMBannerAd} from 'react-native-google-mobile-ads';
 import showAdd, {addIds} from '../../utils/ads';
 import {IAPContext} from '../../Context';
+import { path } from '../../utils/path';
 
 type Props = StackScreenProps<StackNavigationParams, 'preprimary'>;
 const AnimatedFlatlist = createAnimatableComponent(FlatList);
@@ -47,7 +48,7 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
   const [data, setData] = useState<dbData>([]);
   const setting = useSelector((state: rootState) => state.data.settings);
   const [count, setCount] = useState(0);
-
+  const [data1,setData1]=useState('')
   useEffect(() => {
     getPracticeItem();
   }, []);
@@ -83,10 +84,10 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
   }, []);
   const Sound = async (data: dbData) => {
     const track = {
-      url: `asset:/files/${data[count].Sound}`,
+      url: `${path}${data[count].Sound}`,
       title: data[count].Title,
       artist: 'eFlashApps',
-      artwork: `asset:/files/${data[count].Sound}`,
+      artwork: `${path}${data[count].Sound}`,
       duration: 5,
     };
     await playerCopy([track]);
@@ -147,14 +148,65 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
   }, [navigation]);
 
   const translateX = useSharedValue(0);
-  const {width} = Dimensions.get('window');
+  // const {width} = Dimensions.get('window');
+  const { width, height } = Dimensions.get("window");
+const aspectRatio = height / width;
+const IsIPAD = aspectRatio < 1.6;
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{translateX: translateX.value}],
     };
   });
 
+  // const handleSlide = async (nextIndex: number) => {
+  //   const track = {
+  //     url: `${path}soundclick.mp3`,
+  //     title: 'soundclick',
+  //     artist: 'eFlashApps',
+  //     artwork: `${path}soundclick.mp3`,
+  //     duration: 5,
+  //   };
+  //   const track2 = {
+  //     url: `${path}${data[nextIndex].Sound}`,
+  //     title: data[nextIndex].Title,
+  //     artist: 'eFlashApps',
+  //     artwork: `${path}${data[nextIndex].Sound}`,
+  //     duration: 5,
+  //   };
+
+  //   await playerCopy([track]);
+
+  //   const targetTranslateX = width;
+  //   const direction = count < nextIndex ? 1 : -1;
+
+  //   translateX.value = withTiming(targetTranslateX * direction, {
+  //     duration: 0,
+  //     easing: Easing.linear,
+  //   });
+  //   if (count > 0 && count % 15 == 0) {
+  //     !IAP?.hasPurchased && showAdd();
+  //   }
+
+  //   setTimeout(async () => {
+  //     translateX.value = withTiming(0, {
+  //       duration: 200,
+  //       easing: Easing.linear,
+  //     });
+  //     setting.Voice ? await playerCopy([track2]) : null;
+  //   }, 300);
+   
+  //   setCount(nextIndex);
+  //   setData1(data[nextIndex]?.Title)
+  //   console.log('saddassaasddasdas',data[nextIndex].Title);
+    
+
+
+  // };
+
+
   const handleSlide = async (nextIndex: number) => {
+    if (nextIndex < 0 || nextIndex >= data.length) return; // Prevent out-of-bound indices
+  
     const track = {
       url: 'asset:/files/soundclick.mp3',
       title: 'soundclick',
@@ -169,31 +221,37 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
       artwork: `asset:/files/${data[nextIndex].Sound}`,
       duration: 5,
     };
-
+  
+    // Play initial sound
     await playerCopy([track]);
-
-    const targetTranslateX = width;
+  
+    // Determine direction of swipe (forward or backward)
     const direction = count < nextIndex ? 1 : -1;
-
-    translateX.value = withTiming(targetTranslateX * direction, {
+    const targetTranslateX = width * direction;
+  
+    // Update count immediately for UI sync
+    setCount(nextIndex);
+  
+    // Move screen with animation
+    translateX.value = withTiming(targetTranslateX, {
       duration: 0,
       easing: Easing.linear,
     });
-    if (count > 0 && count % 15 == 0) {
-      !IAP?.hasPurchased && showAdd();
-    }
-
+  
+    // Slide back to the main view
+    translateX.value = withTiming(0, {
+      duration: 200,
+      easing: Easing.linear,
+    });
+  
+    // Play the new sound after animation completes
     setTimeout(async () => {
-      translateX.value = withTiming(0, {
-        duration: 200,
-        easing: Easing.linear,
-      });
-      setting.Voice ? await playerCopy([track2]) : null;
-    }, 300);
-
-    setCount(nextIndex);
+      if (setting.Voice) {
+        await playerCopy([track2]);
+      }
+    }, 200);
   };
-
+  
   const setForPractice = async (item: dbItem) => {
     const practiceItems: dbData = [...addedPractice];
 
@@ -336,8 +394,8 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
                             ? hp(92)
                             : hp(85)
                           : setting.Swipe == 1
-                          ? hp(85)
-                          : hp(75),
+                          ? IsIPAD? hp(85):hp(85)
+                          :IsIPAD? hp(75):hp(65),
                       },
                     ]}
                     resizeMode="stretch">
@@ -347,6 +405,7 @@ const PrePrimary: React.FC<Props> = ({navigation}) => {
                         Category == 'GradeTwo' ? {marginTop: '25%'} : undefined,
                       ]}>
                       {data[count]?.Title}
+ 
                     </Text>
                   </ImageBackground>
                 </Animated.View>

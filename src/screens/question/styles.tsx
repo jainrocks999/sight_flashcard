@@ -45,6 +45,6 @@ export default StyleSheet.create({
   questionQontainer: {
     height: '100%',
     width: '100%',
-    paddingTop: '12%',
+    paddingTop: '9%',
   },
 });

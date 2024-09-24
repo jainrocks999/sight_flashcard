@@ -15,6 +15,7 @@ import MyModal from '../../components/Modal';
 import {addIds} from '../../utils/ads';
 import {IAPContext} from '../../Context';
 import PurchasedeModal from '../../components/PurchaseModal';
+import { path} from '../../utils/path';
 type Props = StackScreenProps<StackNavigationParams, 'home'>;
 const Home: React.FC<Props> = ({navigation}) => {
   const IAP = useContext(IAPContext);
@@ -44,10 +45,10 @@ const Home: React.FC<Props> = ({navigation}) => {
   }, [welcomSound]);
   const playsound = async () => {
     const track = {
-      url: 'asset:/files/baby_flash_theme.mp3',
+      url: `${path}baby_flash_theme.mp3`,
       title: 'baby_flash_theme',
       artist: 'eFlashApps',
-      artwork: 'asset:/files/soundclick.mp3',
+      artwork: `${path}soundclick.mp3`,
       duration: 5,
     };
 

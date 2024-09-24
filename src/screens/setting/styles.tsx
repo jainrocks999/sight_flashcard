@@ -1,22 +1,24 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {
   heightPercent as hp,
   widthPrecent as wp,
 } from '../../utils/ResponsiveScreen';
-
+const { width, height } = Dimensions.get("window");
+const aspectRatio = height / width;
+const IsIPAD = aspectRatio < 1.6;
 export default StyleSheet.create({
   container: {
     height: '72%',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: hp(10),
+    marginTop:IsIPAD?hp(10): hp(10),
   },
   settingBg: {
     height: hp(45),
     width: wp(80),
     alignItems: 'center',
-    paddingTop: '15%',
+    paddingTop: IsIPAD?hp(7): hp(7),
   },
   btncontainer: {
     backgroundColor: 'rgba(0,0,0,0.7)',
